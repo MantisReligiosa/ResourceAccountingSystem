@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Exceptions;
@@ -18,7 +19,7 @@ namespace BLL
             _databaseRepository = databaseRepository;
         }
 
-        public void AddNewHouse(House house)
+        public House AddNewHouse(House house)
         {
             if (_databaseRepository.Any<House>(h => h.Address.Equals(house.Address)))
             {
@@ -30,6 +31,7 @@ namespace BLL
                 throw new ValidationErrorException(string.Join(", ", validationResult.Errors.ToList()));
             }
             UpdateHouseInformation(house);
+            return house;
         }
 
         public void DeleteHouse(int houseId)
@@ -41,7 +43,7 @@ namespace BLL
             _databaseRepository.DeleteById<House>(houseId);
         }
 
-        public void EnterMeterReading(string meterSerial, uint readingValue)
+        public void EnterMeterReading(string meterSerial, int readingValue)
         {
             if (!_databaseRepository.Any<Meter>(h => h.Serial.Equals(meterSerial)))
             {
@@ -52,13 +54,17 @@ namespace BLL
             _databaseRepository.AddOrEdit(meter);
         }
 
-        public void EnterMeterReading(int houseId, uint readingValue)
+        public void EnterMeterReading(int houseId, int readingValue)
         {
             var house = FindHouse(houseId);
             var meter = house.Meter;
             if (meter.IsNull())
             {
                 throw new NotFoundException($"В доме с Id {houseId} не найден счётчик");
+            }
+            if (meter.ReadingValue > readingValue)
+            {
+                throw new ValidationErrorException("Вносимые показания некорректны");
             }
             meter.ReadingValue = readingValue;
             _databaseRepository.AddOrEdit(meter);
@@ -74,19 +80,24 @@ namespace BLL
             return house;
         }
 
-        public async Task<IEnumerable<House>> GetAllHousesAsync()
+        public List<House> GetAllHouses()
         {
-            return await _databaseRepository.GetAsync<House>();
+            return _databaseRepository.GetQueryable<House>(h => h.Meter).ToList();
+        }
+
+        public async Task<List<House>> GetAllHousesAsync()
+        {
+            return await Task.Run(() => _databaseRepository.GetQueryable<House>(h => h.Meter).ToList());
         }
 
         public async Task<House> GetHouseWithMaxConsumptionAsync()
         {
-            return await _databaseRepository.GetMaxAsync<House>(h => h.Meter.ReadingValue);
+            throw new NotImplementedException();
         }
 
         public async Task<House> GetHouseWithMinConsumptionAsync()
         {
-            return await _databaseRepository.GetMinAsync<House>(h => h.Meter.ReadingValue);
+            throw new NotImplementedException();
         }
 
         public void RegisterMeter(int houseId, string meterSerial)

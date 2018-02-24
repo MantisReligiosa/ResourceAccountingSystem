@@ -1,15 +1,48 @@
-﻿@{
-    ViewBag.Title = "Home Page";
-}
+﻿@using ResourceAccountingSystemInterface.Models;
+@model  MainModel
 
 <div class="row">
     <div class="col-md-4">
-        
-    </div>
-    <div class="col-md-4">
-        
-    </div>
-    <div class="col-md-4">
-        
+        @using (Ajax.BeginForm("AddHouse", "Home", null, new AjaxOptions { HttpMethod = WebRequestMethods.Http.Post, OnSuccess = "addHouseSuccess" }, new { id = "addHouseForm" }))
+        {
+            <div class="input-group input-group-lg">
+                <input name="houseAddress"
+                       class="form-control"
+                       id="houseAddress"
+                       placeholder="Адрес нового дома"
+                       data-val="true"
+                       data-val-required="Не введен адрес"
+                       style="" />
+                <span class="input-group-btn">
+                    <button type="submit" id="addGroup" class="btn btn-default glyphicon glyphicon-plus" />
+                </span>
+            </div>
+            <span class="field-validation-valid" data-valmsg-for="houseAddress" data-valmsg-replace="true"></span>
+        }
     </div>
 </div>
+<div class="row">
+    <div class="col-md-4">
+        <ul class="list-group" id="housesList">
+            @foreach (var house in Model.Houses)
+            {
+                <li class="list-group-item" id="house@{@house.Id}" style="height:53px">
+                    <label>@house.Address</label>
+                    <button id="delete@{@house.Id}"
+                            class="btn btn-danger glyphicon glyphicon-remove"
+                            style="float:right"
+                            onclick="deleteHouse(@house.Id);return false;"></button>
+                    <button id="edit@{@house.Id}"
+                            class="btn btn-warning glyphicon glyphicon-edit"
+                            style="float:right; margin-right:5px;"
+                            onclick="editHouse(@house.Id);return false;"></button>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+<script>
+    var deleteHouseUrl='@Url.Action("DeleteHouse")'
+</script>
+
+@Scripts.Render("~/bundles/script")

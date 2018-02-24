@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "devDependencies": {
+    "grunt": "1.0.2",
+    "grunt-contrib-clean": "1.1.0",
+    "grunt-contrib-copy": "1.0.0",
+    "grunt-contrib-uglify": "3.3.0",
+    "grunt-contrib-concat": "1.0.1",
+    "grunt-contrib-cssmin": "2.2.1",
+    "load-grunt-tasks": "3.5.2"
+  },
+  "dependencies": {
+    "jquery": "3.3.1",
+    "jquery-ajax-unobtrusive": "3.2.4",
+    "jquery-validation": "1.17.0",
+    "jquery-validation-unobtrusive": "3.2.6",
+    "bootstrap": "3.3.7",
+    "respond.js": "1.4.2",
+    "font-awesome": "4.7.0"
+  }
+}
