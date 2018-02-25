@@ -35,6 +35,11 @@ textarea {
     overflow-y:auto;
 }
 
+.reportButton {
+    margin: 4px;
+    width:290px;
+}
+
 /*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
 html {
   font-family: sans-serif;

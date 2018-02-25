@@ -44,8 +44,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DomainObjects\DomainObjects.csproj">
-      <Project>{3E9831DB-07DA-4AAB-AF6E-D641D2D1294D}</Project>
+    <ProjectReference Include="..\DomainObjects\DomainObjects.csproj">
+      <Project>{3e9831db-07da-4aab-af6e-d641d2d1294d}</Project>
       <Name>DomainObjects</Name>
     </ProjectReference>
   </ItemGroup>

@@ -69,13 +69,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DomainObjects\DomainObjects.csproj">
-      <Project>{3E9831DB-07DA-4AAB-AF6E-D641D2D1294D}</Project>
-      <Name>DomainObjects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\DomainInterfaces\DomainInterfaces.csproj">
       <Project>{be910d26-89bd-469a-8568-bf2cc90cd67a}</Project>
       <Name>DomainInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DomainObjects\DomainObjects.csproj">
+      <Project>{3e9831db-07da-4aab-af6e-d641d2d1294d}</Project>
+      <Name>DomainObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\RepositoryExceptions\RepositoryExceptions.csproj">
       <Project>{071F5039-CE6C-44C1-B5E9-BF11DCED852E}</Project>
@@ -104,10 +104,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Database.mdf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Database_log.ldf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>Database.mdf</DependentUpon>
     </Content>
   </ItemGroup>

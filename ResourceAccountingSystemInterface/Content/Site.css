@@ -34,3 +34,8 @@ textarea {
     height:600px;
     overflow-y:auto;
 }
+
+.reportButton {
+    margin: 4px;
+    width:290px;
+}

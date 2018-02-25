@@ -72,16 +72,24 @@ namespace DatabaseRepository
             }
         }
 
-        public TEntity GetMax<TEntity>(Expression<Func<TEntity, object>> property, params Expression<Func<TEntity, object>>[] includeProperties)
+        public async Task<TResult> GetMaxAsync<TEntity, TResult>(Expression<Func<TEntity, TResult>> selector, 
+            params Expression<Func<TEntity, object>>[] includeProperties)
             where TEntity : class, IIdentified
         {
-            throw new NotImplementedException();
+            IQueryable<TEntity> query = _dataContext.Set<TEntity>();
+            var queryWithInclude = includeProperties
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+            return await queryWithInclude.MaxAsync(selector);
         }
 
-        public TEntity GetMin<TEntity>(Expression<Func<TEntity, object>> property, params Expression<Func<TEntity, object>>[] includeProperties)
+        public async Task<TResult> GetMinAsync<TEntity, TResult>(Expression<Func<TEntity, TResult>> selector, 
+            params Expression<Func<TEntity, object>>[] includeProperties)
             where TEntity : class, IIdentified
         {
-            throw new NotImplementedException();
+            IQueryable<TEntity> query = _dataContext.Set<TEntity>();
+            var queryWithInclude = includeProperties
+                .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+            return await queryWithInclude.MinAsync(selector);
         }
 
         public IQueryable<TEntity> GetQueryable<TEntity>(params Expression<Func<TEntity, object>>[] includeProperties)

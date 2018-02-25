@@ -151,6 +151,8 @@
     <Compile Include="Common\JsonDataContractResult.cs" />
     <Compile Include="Common\Result.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="DTO\MeterReadingsValueUpdatingInfo.cs" />
+    <Compile Include="DTO\MeterUpdatingInfo.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -192,10 +194,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\DomainObjects\DomainObjects.csproj">
-      <Project>{3E9831DB-07DA-4AAB-AF6E-D641D2D1294D}</Project>
-      <Name>DomainObjects</Name>
-    </ProjectReference>
     <ProjectReference Include="..\BLL.Exceptions\BLL.Exceptions.csproj">
       <Project>{4354D583-EE99-4868-9A6B-30AA0CCB0343}</Project>
       <Name>BLL.Exceptions</Name>
@@ -207,6 +205,10 @@
     <ProjectReference Include="..\DatabaseRepository\DatabaseRepository.csproj">
       <Project>{d5b6a3d8-2fa2-4ff4-b550-76647e974010}</Project>
       <Name>DatabaseRepository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DomainObjects\DomainObjects.csproj">
+      <Project>{3e9831db-07da-4aab-af6e-d641d2d1294d}</Project>
+      <Name>DomainObjects</Name>
     </ProjectReference>
     <ProjectReference Include="..\Extensions\Extensions.csproj">
       <Project>{BBEEE6F5-2710-4D46-A6BA-ED0ACAC18980}</Project>

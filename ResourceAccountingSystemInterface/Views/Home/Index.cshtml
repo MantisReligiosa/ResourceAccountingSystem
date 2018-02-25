@@ -1,48 +1,171 @@
 ﻿@using ResourceAccountingSystemInterface.Models;
 @model  MainModel
-
 <div class="row">
     <div class="col-md-4">
-        @using (Ajax.BeginForm("AddHouse", "Home", null, new AjaxOptions { HttpMethod = WebRequestMethods.Http.Post, OnSuccess = "addHouseSuccess" }, new { id = "addHouseForm" }))
+        <label>
+            <span class="glyphicon glyphicon-home">
+            </span> Список домов
+        </label>
+        <div class="row">
+            @using (Ajax.BeginForm("AddHouse", "Home", null,
+                new AjaxOptions { HttpMethod = WebRequestMethods.Http.Post, OnSuccess = "addHouseSuccess" }, new { id = "addHouseForm" }))
+            {
+                <div class="input-group input-group-lg">
+                    <input name="houseAddress"
+                           class="form-control"
+                           id="houseAddress"
+                           placeholder="Адрес нового дома"
+                           data-val="true"
+                           data-val-required="Не введен адрес"
+                           style="" />
+                    <span class="input-group-btn">
+                        <button type="submit"
+                                id="addGroup"
+                                class="btn btn-default glyphicon glyphicon-plus"
+                                data-toggle="tooltip"
+                                title="Добавить новый"
+                                data-placement="right" />
+                    </span>
+                </div>
+                <span class="field-validation-valid" data-valmsg-for="houseAddress" data-valmsg-replace="true"></span>
+            }
+        </div>
+        <div class="row">
+            <ul class="list-group" id="housesList">
+                @foreach (var house in Model.Houses)
+                {
+                    var meterId = house.Meter?.Id ?? 0;
+                    var meterSerial = house.Meter?.Serial ?? "";
+                    var meterValue = house.Meter?.ReadingValue ?? 0;
+                    <li class="list-group-item" id="house@{@house.Id}" style="height:53px">
+                        <label>@house.Address</label>
+                        <button id="delete@{@house.Id}"
+                                class="btn btn-danger glyphicon glyphicon-remove"
+                                style="float:right"
+                                data-toggle="tooltip"
+                                title="Удалить дом"
+                                data-placement="left"
+                                onclick="deleteHouse(@house.Id);return false;"></button>
+                        <button id="edit@{@house.Id}"
+                                class="btn btn-warning glyphicon glyphicon-dashboard"
+                                style="float:right; margin-right:5px;"
+                                data-toggle="tooltip"
+                                title="Изменить счётчик"
+                                data-placement="left"
+                                onclick="editHouse(@house.Id);return false;"></button>
+                        <button id="meter_ofHouse@{@house.Id}"
+                                class="btn btn-success glyphicon glyphicon-pencil"
+                                style="float:right; margin-right:5px;"
+                                data-toggle="tooltip"
+                                title="Внести показания"
+                                data-placement="left"
+                                onclick="updateMeterValue('@{@meterSerial}');return false;"></button>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <label>
+            <span class="glyphicon glyphicon-dashboard">
+            </span> Изменение серийного номера счётчика
+        </label>
+        @using (Ajax.BeginForm("UpdateHouseMeter", "Home", null,
+            new AjaxOptions { HttpMethod = WebRequestMethods.Http.Post, OnSuccess = "updateHouseMeterSuccess" }, new { id = "updateHouseForm" }))
         {
+            <input name="houseIdUpdate"
+                   id="houseIdUpdate"
+                   type="hidden" />
             <div class="input-group input-group-lg">
-                <input name="houseAddress"
-                       class="form-control"
-                       id="houseAddress"
-                       placeholder="Адрес нового дома"
-                       data-val="true"
-                       data-val-required="Не введен адрес"
-                       style="" />
-                <span class="input-group-btn">
-                    <button type="submit" id="addGroup" class="btn btn-default glyphicon glyphicon-plus" />
+                <span class="input-group input-group-addon glyphicon glyphicon-home">
                 </span>
+                <input name="houseAddressUpdate"
+                       class="form-control"
+                       id="houseAddressUpdate"
+                       placeholder="Адрес дома"
+                       disabled />
             </div>
-            <span class="field-validation-valid" data-valmsg-for="houseAddress" data-valmsg-replace="true"></span>
+            <div class="input-group input-group-lg">
+                <span class="input-group input-group-addon glyphicon glyphicon-dashboard">
+                </span>
+                <input name="meterSerialUpdate"
+                       class="form-control"
+                       id="meterSerialUpdate"
+                       placeholder="Новый серийный номер"
+                       data-val="true"
+                       data-val-required="Не введен серийный номер счётчика"
+                       disabled />
+            </div>
+            <span class="field-validation-valid" data-valmsg-for="meterSerialUpdate" data-valmsg-replace="true"></span>
+            <button id="meterSerialSubmit"
+                    class="btn btn-success glyphicon glyphicon-floppy-save"
+                    style="float:right; margin-right:5px;"
+                    disabled>
+                Сохранить
+            </button>
         }
     </div>
-</div>
-<div class="row">
     <div class="col-md-4">
-        <ul class="list-group" id="housesList">
-            @foreach (var house in Model.Houses)
+        <div class="row">
+            <label>
+                <span class="glyphicon glyphicon-pencil">
+                </span> Внесение показаний
+            </label>
+            @using (Ajax.BeginForm("UpdateMeterReadingValue", "Home", null,
+                new AjaxOptions { HttpMethod = WebRequestMethods.Http.Post, OnSuccess = "updateMeterReadingValueSuccess" }, new { id = "updateMeterReadingValueForm" }))
             {
-                <li class="list-group-item" id="house@{@house.Id}" style="height:53px">
-                    <label>@house.Address</label>
-                    <button id="delete@{@house.Id}"
-                            class="btn btn-danger glyphicon glyphicon-remove"
-                            style="float:right"
-                            onclick="deleteHouse(@house.Id);return false;"></button>
-                    <button id="edit@{@house.Id}"
-                            class="btn btn-warning glyphicon glyphicon-edit"
-                            style="float:right; margin-right:5px;"
-                            onclick="editHouse(@house.Id);return false;"></button>
-                </li>
+                <div class="input-group input-group-lg">
+                    <span class="input-group input-group-addon glyphicon glyphicon-dashboard">
+                    </span>
+                    <input name="meterSerialUpdateVal"
+                           class="form-control"
+                           id="meterSerialUpdateVal"
+                           placeholder="Серийный номер счётчика"
+                           data-val="true"
+                           data-val-required="Не введен серийный номер счётчика" />
+                </div>
+                <span class="field-validation-valid" data-valmsg-for="meterSerialUpdateVal" data-valmsg-replace="true"></span>
+                <div class="input-group input-group-lg">
+                    <span class="input-group input-group-addon glyphicon glyphicon-pencil">
+                    </span>
+                    <input name="meterValueUpdate"
+                           class="form-control"
+                           id="meterValueUpdate"
+                           type="number"
+                           placeholder="Показания"
+                           data-val="true"
+                           data-val-required="Не введены показания счётчика" />
+                </div>
+                <span class="field-validation-valid" data-valmsg-for="meterSerialUpdate" data-valmsg-replace="true"></span>
+                <button id="meterValueSubmit"
+                        class="btn btn-success glyphicon glyphicon-export"
+                        style="float:right; margin-right:5px;">
+                    Передать
+                </button>
             }
-        </ul>
+        </div>
+        <div class="row">
+            <label>
+                <span class="glyphicon glyphicon-list-alt">
+                </span> Информация
+            </label>
+            <div class="row" style="margin:0">
+                <button id="getMaxConsumption"
+                        class="btn btn-info reportButton">
+                    Дом с максимальным потреблением
+                </button>
+                <button id="getMinConsumption"
+                        class="btn btn-info reportButton">
+                    Дом с минимальным потреблением
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <script>
-    var deleteHouseUrl='@Url.Action("DeleteHouse")'
+    var deleteHouseUrl = '@Url.Action("DeleteHouse")';
+    var getMaxConsumption = '@Url.Action("GetMaxConsumption")';
+    var getMinConsumption = '@Url.Action("GetMinConsumption")';
 </script>
 
 @Scripts.Render("~/bundles/script")

@@ -2,17 +2,15 @@
 using BLL.Exceptions;
 using DatabaseRepository;
 using DomainObjects;
-using RepositoryInterfaces;
+using Extensions;
 using ResourceAccountingSystemInterface.Common;
+using ResourceAccountingSystemInterface.DTO;
 using ResourceAccountingSystemInterface.Models;
 using ServiceInterfaces;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ResourceAccountingSystemInterface.Controllers
@@ -101,14 +99,124 @@ namespace ResourceAccountingSystemInterface.Controllers
             }
         }
 
-        protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior jsonRequestBehavior)
+        [HttpPost]
+        public ActionResult UpdateHouseMeter(MeterUpdatingInfo info)
+        {
+            try
+            {
+                var house = _consumptionAccounter.FindHouse(info.houseIdUpdate);
+                if (house.Meter.IsNull())
+                {
+                    house.Meter = new Meter
+                    {
+                        Serial = info.meterSerialUpdate
+                    };
+                }
+                else
+                {
+                    house.Meter.Serial = info.meterSerialUpdate;
+                    house.Meter.ReadingValue = default(int);
+                }
+                _consumptionAccounter.UpdateHouseInformation(house);
+                return Json(new Result
+                {
+                    Success = true,
+                    Message = "Счётчик добавлен",
+                    Data = house.Meter.Serial
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new Result
+                {
+                    Success = false,
+                    Message = "Ошибка выполнения"
+                });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult UpdateMeterReadingValue(MeterReadingsValueUpdatingInfo info)
+        {
+            try
+            {
+                _consumptionAccounter.EnterMeterReading(info.meterSerialUpdateVal, info.meterValueUpdate);
+                return Json(new Result
+                {
+                    Success = true,
+                    Message = "Данные переданы"
+                });
+            }
+            catch (Exception ex)
+            {
+                if (ex is NotFoundException ||
+                    ex is ValidationErrorException)
+                    return Json(new Result
+                    {
+                        Success = false,
+                        Message = ex.Message
+                    });
+
+                return Json(new Result
+                {
+                    Success = false,
+                    Message = "Ошибка выполнения"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetMaxConsumption()
+        {
+            try
+            {
+                var house = await _consumptionAccounter.GetHouseWithMaxConsumptionAsync();
+                return Json(new Result
+                {
+                    Success = true,
+                    Data = house
+                });
+            }
+            catch
+            {
+                return Json(new Result
+                {
+                    Success = false,
+                    Message = "Ошибка выполнения"
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetMinConsumption()
+        {
+            try
+            {
+                var house = await _consumptionAccounter.GetHouseWithMinConsumptionAsync();
+                return Json(new Result
+                {
+                    Success = true,
+                    Data = house
+                });
+            }
+            catch
+            {
+                return Json(new Result
+                {
+                    Success = false,
+                    Message = "Ошибка выполнения"
+                });
+            }
+        }
+
+        protected override JsonResult Json(object data, string contentType, Encoding contentEncoding, JsonRequestBehavior behavior)
         {
             return new JsonDataContractResult
             {
                 Data = data,
                 ContentType = contentType,
                 ContentEncoding = contentEncoding,
-                JsonRequestBehavior = jsonRequestBehavior
+                JsonRequestBehavior = behavior
             };
         }
     }

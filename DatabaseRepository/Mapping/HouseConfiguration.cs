@@ -9,7 +9,7 @@ namespace DatabaseRepository.Mapping
         {
             ToTable("House");
             HasKey(h => h.Id);
-            Property(h => h.Id).HasColumnName("Id");
+            Property(h => h.Id).HasColumnName("Id").HasDatabaseGeneratedOption(System.ComponentModel.DataAnnotations.Schema.DatabaseGeneratedOption.Identity);
             Property(h => h.Address).HasColumnName("Address");
             HasOptional(h => h.Meter).WithRequired(m => m.House);
         }

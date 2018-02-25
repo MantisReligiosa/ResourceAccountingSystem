@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using BLL.Exceptions;
@@ -14,6 +13,7 @@ namespace BLL
     public class ConsumptionAccounter : IConsumptionAccounter
     {
         private readonly IDatabaseRepository _databaseRepository;
+
         public ConsumptionAccounter(IDatabaseRepository databaseRepository)
         {
             _databaseRepository = databaseRepository;
@@ -40,6 +40,9 @@ namespace BLL
             {
                 throw new NotFoundException($"Дом с Id {houseId} не найден");
             }
+            var house = _databaseRepository.GetQueryable<House>(h => h.Meter).FirstOrDefault(h => h.Id == houseId);
+            house.Meter = null;
+            _databaseRepository.AddOrEdit(house);
             _databaseRepository.DeleteById<House>(houseId);
         }
 
@@ -50,6 +53,10 @@ namespace BLL
                 throw new NotFoundException($"Счётчик с серийным номером {meterSerial} не найден");
             }
             var meter = _databaseRepository.GetQueryable<Meter>().First(m => m.Serial.Equals(meterSerial));
+            if (meter.ReadingValue > readingValue)
+            {
+                throw new ValidationErrorException("Вводимые показание меньше текущих");
+            }
             meter.ReadingValue = readingValue;
             _databaseRepository.AddOrEdit(meter);
         }
@@ -72,7 +79,7 @@ namespace BLL
 
         public House FindHouse(int houseId)
         {
-            var house = _databaseRepository.GetQueryable<House>().FirstOrDefault(h => h.Id == houseId);
+            var house = _databaseRepository.GetQueryable<House>(h => h.Meter).FirstOrDefault(h => h.Id == houseId);
             if (house.IsNull())
             {
                 throw new NotFoundException($"Дом с Id {houseId} не найден");
@@ -92,12 +99,14 @@ namespace BLL
 
         public async Task<House> GetHouseWithMaxConsumptionAsync()
         {
-            throw new NotImplementedException();
+            var maxConsumption = await _databaseRepository.GetMaxAsync<House, int>(h => h.Meter.ReadingValue, h => h.Meter);
+            return _databaseRepository.GetQueryable<House>(h => h.Meter).FirstOrDefault(h => h.Meter.ReadingValue == maxConsumption);
         }
 
         public async Task<House> GetHouseWithMinConsumptionAsync()
         {
-            throw new NotImplementedException();
+            var minConsumption = await _databaseRepository.GetMinAsync<House, int>(h => h.Meter.ReadingValue, h => h.Meter);
+            return _databaseRepository.GetQueryable<House>(h => h.Meter).FirstOrDefault(h => h.Meter.ReadingValue == minConsumption);
         }
 
         public void RegisterMeter(int houseId, string meterSerial)

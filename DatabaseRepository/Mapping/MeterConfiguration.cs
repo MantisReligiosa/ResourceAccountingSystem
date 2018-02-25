@@ -9,8 +9,10 @@ namespace DatabaseRepository.Mapping
         {
             ToTable("Meter");
             HasKey(m => m.Id);
+            Property(m => m.Id);
             Property(m => m.ReadingValue).HasColumnName("ReadingValue");
             Property(m => m.Serial).HasColumnName("Serial");
+            Ignore(m => m.House);
         }
     }
 }
